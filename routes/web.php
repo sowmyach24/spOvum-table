@@ -14,10 +14,9 @@ use App\Http\Controllers\table_controller;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-// Route::get('/extract-and-insert', 'table_controller@extractAndInsertData');
-Route::get('/', [table_controller::class, 'extractAndInsertData']);
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::post('/extract-and-insert', [table_controller::class, 'extractAndInsertData']);
 
 

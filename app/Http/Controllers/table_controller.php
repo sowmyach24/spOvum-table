@@ -4,26 +4,42 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tables;
 use Illuminate\Support\Facades\File;
+use ZipArchive;
 
 class table_controller extends Controller
 {
-    public function extractAndInsertData() {
-        $dataFolder = public_path('storage/table/Data_interview');
+    public function extractAndInsertData(REQUEST $request) {
+
+        $this->validate($request, [
+            'file_upload'   =>  'required'
+        ]);
+        $file = $request->file_upload;
+        // $dataFolder = public_path('/table');
+        $destinationPath = public_path('/table');
+            $zip = new ZipArchive();
+            $res = $zip->open($file);
+            if ($res === TRUE) {
+                $zip->extractTo($destinationPath);
+                $zip->close();
+            }
 
         $data = [];
+        $dataFolder = public_path('table/Data_interview');
 
         foreach (scandir($dataFolder) as $folderName) {
+
             $folderPath = $dataFolder . '/' . $folderName;
 
             if (is_dir($folderPath)) {
-
                 $date = substr($folderName, 0, 8);
+
                 foreach (scandir($folderPath) as $fileName) {
                     if ($fileName === 'DM_values.txt') {
                         $filePath = $folderPath . '/' . $fileName;
 
                         // Read the file and extract data
                         $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
                         foreach ($lines as $line) {
                             $parts = explode(' ', $line);
                                 $data[] = [
